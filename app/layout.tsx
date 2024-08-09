@@ -16,7 +16,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body
+        className={`grid grid-cols-4 gap-0 h-dvh bg-sky-100 ${inter.className}`}
+      >
+        {children}
+      </body>
     </html>
   );
 }
