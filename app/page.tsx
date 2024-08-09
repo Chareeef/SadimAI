@@ -1,3 +1,11 @@
+import Link from "next/link";
+import Header from "./components/Header";
+
 export default function LandingPage() {
-  return <a href="/chat">Chat</a>;
+  return (
+    <>
+      <Header />
+      <Link href="/chat">Chat</Link>
+    </>
+  );
 }

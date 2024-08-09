@@ -119,9 +119,9 @@ function ChatWindow() {
 
 export default function Chat() {
   return (
-    <>
+    <div className="grid grid-cols-4 gap-0 h-dvh bg-sky-100">
       <aside className="bg-sky-600 border-r-2 border-blue-800">History</aside>
       <ChatWindow />
-    </>
+    </div>
   );
 }
