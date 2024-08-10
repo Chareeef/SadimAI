@@ -3,6 +3,8 @@ import { Dispatch, MouseEventHandler, SetStateAction, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
+import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 
 // Define the shape of a message for the chat
 interface Message {
@@ -22,15 +24,15 @@ function InputArea({
   sendMessage,
 }: InputAreaProps) {
   return (
-    <div className="flex border-y-2 border-r-2 border-teal-500 m-0">
+    <div className="h-14 flex border-y-2 border-r-2 border-teal-500 m-0">
       <textarea
-        className="grow h-16 pt-4 px-2 bg-teal-600 text-white border-r-2 border-teal-500 focus:outline-none focus:bg-teal-700"
+        className="grow h-full pt-3 px-2 bg-teal-600 text-white border-r-2 border-teal-500 focus:outline-none focus:bg-teal-700"
         value={userMessage}
         onChange={(e) => setUserMessage(e.target.value)}
         placeholder="Type your message here..."
       />
       <button
-        className="p-4 bg-emerald-500 hover:bg-emerald-600 text-white"
+        className="flex items-center justify-center px-4 bg-emerald-500 hover:bg-emerald-600 text-white"
         onClick={sendMessage}
       >
         Send
@@ -131,10 +133,59 @@ function ChatWindow() {
   );
 }
 
+function Aside() {
+  const { data: session } = useSession();
+
+  const user = session?.user;
+  return (
+    <aside className="flex flex-col bg-teal-800 border-r-2 border-teal-500">
+      {/* Profile */}
+      <div className="flex flex-col items-center text-center justify-around py-2 shadow-lg min-h-[25%]">
+        <Image
+          src={user?.image as string}
+          alt="Profile picture"
+          width={64}
+          height={64}
+          className="rounded-full border-2 border-emerald-400"
+        />
+        {user?.name !== user?.email ? (
+          <>
+            <p className="text-xl text-white font-mono font-bold italic">
+              {user?.name}
+            </p>
+            <p className="text-base text-white font-mono font-bold break-all">
+              {user?.email}
+            </p>
+          </>
+        ) : (
+          <p className="text-xl text-white font-mono font-bold italic">
+            {user?.email}
+          </p>
+        )}
+      </div>
+
+      {/* History */}
+      <div className="grow shadow-lg">
+        <div className="flex flex col overflow-y-auto"></div>
+      </div>
+
+      {/* Logout */}
+      <div className="h-14 p-4 flex items-center justify-center">
+        <button
+          onClick={() => signOut({ callbackUrl: "/" })}
+          className="rounded bg-rose-500 hover:bg-rose-600 p-2"
+        >
+          Sign Out
+        </button>
+      </div>
+    </aside>
+  );
+}
+
 export default function Chat() {
   return (
     <div className="grid grid-cols-4 gap-0 h-dvh">
-      <aside className="bg-teal-800 border-r-2 border-teal-500">History</aside>
+      <Aside />
       <ChatWindow />
     </div>
   );
