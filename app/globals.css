@@ -9,5 +9,6 @@
 }
 
 .message {
-max-width: 80%;
+	max-width: 80%;
+	line-height: 2rem;
 }

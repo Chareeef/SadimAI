@@ -1,5 +1,8 @@
 "use client";
 import { Dispatch, MouseEventHandler, SetStateAction, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
 
 // Define the shape of a message for the chat
 interface Message {
@@ -21,13 +24,13 @@ function InputArea({
   return (
     <div className="flex">
       <textarea
-        className="grow h-16 pt-4 px-2 border-t-2 border-r-2 border-black focus:border-blue-500"
+        className="grow h-16 pt-4 px-2 border-t-2 bg-violet-500 text-white border-r-2 border-black focus:border-blue-500 m-0"
         value={userMessage}
         onChange={(e) => setUserMessage(e.target.value)}
         placeholder="Type your message here..."
       />
       <button
-        className="p-4 bg-sky-600 hover:bg-sky-500 text-white border-t-2 border-black"
+        className="p-4 bg-fuchsia-600 hover:bg-sky-500 text-white border-t-2 border-black"
         onClick={sendMessage}
       >
         Send
@@ -91,7 +94,7 @@ function ChatWindow() {
   }
 
   return (
-    <main className="col-span-3 flex flex-col text-xl bg-sky-300 max-h-dvh">
+    <main className="col-span-3 flex flex-col text-xl bg-gradient-to-r from-fuchsia-600 to-fuchsia-800 max-h-dvh">
       <div className="grow overflow-y-auto">
         <div className="flex flex-col justify-end p-2 min-h-full space-y-2">
           {conversation.map((message, index) => (
@@ -99,11 +102,16 @@ function ChatWindow() {
               key={index}
               className={`message p-2 ${
                 message.role === "user"
-                  ? "bg-sky-800 text-white self-end rounded-bl-lg"
-                  : "bg-white self-start rounded-br-lg"
+                  ? "bg-white text-black self-end rounded-bl-lg"
+                  : "bg-violet-500 self-start rounded-br-lg"
               }`}
             >
-              {message.content}
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
+              >
+                {message.content}
+              </ReactMarkdown>
             </div>
           ))}
         </div>
@@ -119,8 +127,10 @@ function ChatWindow() {
 
 export default function Chat() {
   return (
-    <div className="grid grid-cols-4 gap-0 h-dvh bg-sky-100">
-      <aside className="bg-sky-600 border-r-2 border-blue-800">History</aside>
+    <div className="grid grid-cols-4 gap-0 h-dvh bg-fuchsia-100">
+      <aside className="bg-fuchsia-400 border-r-2 border-blue-800">
+        History
+      </aside>
       <ChatWindow />
     </div>
   );
