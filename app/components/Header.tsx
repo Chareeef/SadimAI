@@ -6,7 +6,7 @@ export default function Header() {
   const { data: session } = useSession();
 
   return (
-    <header className="flex items-center justify-between bg-fuchsia-700 p-2 text-white">
+    <header className="flex items-center justify-between bg-teal-700 p-2 text-white">
       <div className="flex items-center font-bold">
         <Image
           src="/ChatWithAI.png"
@@ -20,14 +20,14 @@ export default function Header() {
         {session && session.user ? (
           <button
             onClick={() => signOut()}
-            className="text-2xl p-2 bg-fuchsia-900 border-2 border-white rounded-lg"
+            className="text-2xl p-2 bg-emerald-500 hover:bg-emerald-600 border-2 border-white rounded-lg"
           >
             Sign Out
           </button>
         ) : (
           <button
             onClick={() => signIn()}
-            className="text-2xl p-2 bg-fuchsia-900 border-2 border-white rounded-lg"
+            className="text-2xl p-2 bg-emerald-500 hover:bg-emerald-600 border-2 border-white rounded-lg"
           >
             Sign In
           </button>
