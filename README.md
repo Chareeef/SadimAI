@@ -15,8 +15,7 @@ Sadim (Arabic for "Nebula") is an AI-powered chatbot designed to deliver smooth,
 
 You can try out Sadim at [sadim-ai.com](https://sadim-ai.com).
 
-![Screenshot_20240810-225030_Kiwi Browser](https://github.com/user-attachments/assets/e4052039-d92e-418a-8e2a-dff0c24b4aec)
-
+![ChatWithAI_Demo](https://github.com/user-attachments/assets/0a8e50fb-1d72-4c21-83f4-e49ca5cf4fa5)
 
 ## Technologies Used
 
@@ -32,4 +31,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ---
 
-Thank you for using Sadim! We hope you enjoy the experience.
+Thank you for using Sadim! I hope you enjoy the experience.
