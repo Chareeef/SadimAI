@@ -8,8 +8,8 @@ import Head from "next/head";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Chat With Bot",
-  description: "AI Chatbot for customer support",
+  title: "Sadim AI",
+  description: "AI Chatbot for all your needs.",
 };
 
 export default function RootLayout({

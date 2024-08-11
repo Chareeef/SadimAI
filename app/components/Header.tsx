@@ -9,13 +9,8 @@ export default function Header() {
   return (
     <header className="flex items-center justify-between bg-teal-700 p-2 text-white">
       <div className="flex items-center font-bold">
-        <Image
-          src="/ChatWithAI.png"
-          alt="ChatWithAI Logo"
-          width={64}
-          height={64}
-        />
-        <h1 className="text-3xl ml-2">Chat With AI</h1>
+        <Image src="/Sadim_Logo.png" alt="Sadim Logo" width={64} height={64} />
+        <h1 className="text-3xl ml-2">Sadim</h1>
       </div>
       <nav>
         {session && session.user ? (
