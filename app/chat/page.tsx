@@ -101,7 +101,7 @@ function ChatWindow() {
         <div className="flex flex-col justify-end p-2 min-h-full space-y-2">
           {conversation.length === 0 && (
             <p className="text-base text-gray-700 self-center">
-              I will be happy to help you with anything you need!
+              I am Sadim! Ready to help you with anything you need!
             </p>
           )}
 

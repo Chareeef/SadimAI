@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import Providers from "./components/Providers";
 import "./globals.css";
 import "highlight.js/styles/tomorrow-night-blue.css";
-import Head from "next/head";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Head>
+      <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
 
         <link
@@ -42,7 +41,7 @@ export default function RootLayout({
           type="image/<generated>"
           sizes="<generated>"
         />
-      </Head>
+      </head>
 
       <body className={`${inter.className}`}>
         <Providers>{children}</Providers>
