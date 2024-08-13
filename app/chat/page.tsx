@@ -1,12 +1,26 @@
 "use client";
-import { Dispatch, MouseEventHandler, SetStateAction, useState } from "react";
+import {
+  Dispatch,
+  MouseEventHandler,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "./firestore";
+import { v4 as uuidv4 } from "uuid";
 
-// Define the shape of a message for the chat
+interface User {
+  name?: string | null | undefined;
+  email?: string | null | undefined;
+  image?: string | null | undefined;
+}
+
 interface Message {
   role: "system" | "user" | "assistant";
   content: string;
@@ -18,9 +32,10 @@ interface InputAreaProps {
   sendMessage: MouseEventHandler<HTMLButtonElement>;
 }
 
-interface OpenAsideProps {
+interface OpenAsideAndUserProps {
   openAside: boolean;
   setOpenAside: Dispatch<SetStateAction<boolean>>;
+  user: User | undefined;
 }
 
 function InputArea({
@@ -46,20 +61,50 @@ function InputArea({
   );
 }
 
-function ChatWindow({ openAside, setOpenAside }: OpenAsideProps) {
+function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
   const initialConversation: Message[] = [];
   const [conversation, setConversation] =
     useState<Message[]>(initialConversation);
+  const [conversationId, setConversationId] = useState<string>("");
   const [userMessage, setUserMessage] = useState<string>("");
+
+  useEffect(() => {
+    if (!conversationId) {
+      // Generate a new UUID for the conversation
+      setConversationId(uuidv4());
+    }
+  }, [conversationId]);
+
+  async function saveToFirestore() {
+    console.log(conversation);
+
+    const docRef = doc(
+      db,
+      "users",
+      user?.email as string,
+      "conversations",
+      conversationId,
+    );
+
+    try {
+      await setDoc(docRef, { messages: conversation }, { merge: true });
+    } catch (error) {
+      console.error(error);
+    }
+    console.log(docRef);
+  }
 
   async function sendMessage() {
     if (!userMessage.trim()) return;
+
     setConversation((conversation) => [
       ...conversation,
       { role: "user", content: userMessage },
       { role: "assistant", content: "" },
     ]);
+
     setUserMessage("");
+
     try {
       const response = await fetch("/api/chat/", {
         method: "POST",
@@ -69,6 +114,7 @@ function ChatWindow({ openAside, setOpenAside }: OpenAsideProps) {
           { role: "user", content: userMessage },
         ]),
       });
+
       if (!response.body) {
         console.error("response.body is not found");
         return;
@@ -99,6 +145,21 @@ function ChatWindow({ openAside, setOpenAside }: OpenAsideProps) {
       // Display flash message
     }
   }
+
+  useEffect(() => {
+    // Define an async function inside useEffect
+    const saveConversation = async () => {
+      if (
+        conversation.length > 0 &&
+        conversation[conversation.length - 1].role === "assistant"
+      ) {
+        await saveToFirestore();
+      }
+    };
+
+    // Call the async function
+    saveConversation();
+  }, [conversation]);
 
   return (
     <main className="md:col-span-3 flex flex-col text-lg bg-white h-dvh">
@@ -142,10 +203,7 @@ function ChatWindow({ openAside, setOpenAside }: OpenAsideProps) {
   );
 }
 
-function Aside({ openAside, setOpenAside }: OpenAsideProps) {
-  const { data: session } = useSession();
-
-  const user = session?.user;
+function Aside({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
   return (
     <aside
       className={`absolute md:relative h-dvh w-full z-20 flex flex-col bg-teal-800 border-r-2 border-teal-500 transform md:translate-x-0 ${!openAside && "-translate-x-full"} transiton-transform ease-in-out duration-700`}
@@ -199,11 +257,18 @@ function Aside({ openAside, setOpenAside }: OpenAsideProps) {
 
 export default function Chat() {
   const [openAside, setOpenAside] = useState<boolean>(false);
+  const { data: session } = useSession();
+
+  const user = session?.user;
 
   return (
     <div className="md:grid md:grid-cols-4 md:gap-0 h-dvh">
-      <Aside openAside={openAside} setOpenAside={setOpenAside} />
-      <ChatWindow openAside={openAside} setOpenAside={setOpenAside} />
+      <Aside openAside={openAside} setOpenAside={setOpenAside} user={user} />
+      <ChatWindow
+        openAside={openAside}
+        setOpenAside={setOpenAside}
+        user={user}
+      />
     </div>
   );
 }
