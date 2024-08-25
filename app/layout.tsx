@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Providers from "./components/Providers";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import "highlight.js/styles/tomorrow-night-blue.css";
 
@@ -45,6 +46,7 @@ export default function RootLayout({
 
       <body className={`${inter.className}`}>
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
