@@ -23,7 +23,6 @@ You can try out Sadim at [sadim-ai.com](https://sadim-ai.com).
 - **Tailwind CSS:** Utility-first CSS framework for styling.
 - **Groq API:** AI processing engine powering Sadim's rapid inference capabilities.
 - **NextAuth:** Authentication for Next.js applications.
-- **Amazon EC2:** Sadim is deployed on an Amazon EC2 instance, ensuring reliable and scalable hosting.
 
 ## License
 
