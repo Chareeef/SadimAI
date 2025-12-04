@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="flex flex-col justify-center items-center p-4 bg-teal-700 border-t-2 border-emerald-600 text-white text-xl">
       <h3 className="font-bold">Youssef Charif Hamidi</h3>
-      <p className="mt-1">© 2024</p>
+      <p className="mt-1">© 2025</p>
       <div className="flex space-x-4 mt-2">
         <a
           className="hover:text-green-800"
