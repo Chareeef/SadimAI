@@ -8,6 +8,10 @@
 	box-sizing: border-box;
 }
 
+body {
+	background-color: #000;
+}
+
 .message {
 	max-width: 80%;
 	line-height: 2rem;

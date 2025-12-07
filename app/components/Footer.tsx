@@ -1,37 +1,38 @@
-import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { Icon } from "@iconify/react";
 
 export default function Footer() {
   return (
-    <footer className="flex flex-col justify-center items-center p-4 bg-teal-700 border-t-2 border-emerald-600 text-white text-xl">
-      <h3 className="font-bold">Youssef Charif Hamidi</h3>
-      <p className="mt-1">© 2025</p>
-      <div className="flex space-x-4 mt-2">
+    <footer className="flex flex-col gap-4 justify-center items-center p-4 bg-black/95 border-t-2 border-green-800/50 text-green-400 text-xl shadow-2xl shadow-green-900/30">
+      <h3 className="font-bold bg-gradient-to-r from-green-400 to-emerald-300 bg-clip-text text-transparent">
+        Youssef Charif Hamidi
+      </h3>
+      <div className="flex space-x-4">
         <a
-          className="hover:text-green-800"
+          className="hover:text-emerald-300 transition-colors"
           href="https://github.com/Chareeef"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <FaGithub size={20} />
+          <Icon icon="mdi:github" width={24} height={24} />
         </a>
         <a
-          className="hover:text-green-800"
+          className="hover:text-emerald-300 transition-colors"
           href="https://linkedin.com/in/youssef-charif-hamidi"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <FaLinkedin size={20} />
+          <Icon icon="mdi:linkedin" width={24} height={24} />
         </a>
         <a
+          className="hover:text-emerald-300 transition-colors"
           href="https://x.com/YoussefCharifH2"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center hover:text-green-800"
-          style={{ width: "20px", height: "20px" }}
         >
-          <span style={{ fontSize: "20px", fontWeight: "bold" }}>𝕏</span>
+          <Icon icon="tabler:brand-x" width={24} height={24} />
         </a>
       </div>
+      <p className="text-green-500">© 2025</p>
     </footer>
   );
 }
