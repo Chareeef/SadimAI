@@ -3,6 +3,7 @@ import Link from "next/link";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { motion } from "framer-motion";
+import Aurora from "./components/Aurora";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -18,7 +19,9 @@ export default function LandingPage() {
   return (
     <>
       <Header />
-      <main className="flex flex-col items-center bg-gradient-to-b from-black to-green-900 w-full min-h-dvh text-center text-green-300">
+      <main className="relative flex flex-col items-center w-full min-h-screen text-center text-green-300 overflow-hidden">
+        <Aurora />
+
         {/* Hero Section */}
         <section className="flex flex-col items-center justify-center h-[60vh] px-4">
           <motion.h1

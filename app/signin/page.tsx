@@ -4,6 +4,7 @@ import Header from "@/app/components/Header";
 import Footer from "@/app/components/Footer";
 import { motion } from "framer-motion";
 import { Icon } from "@iconify/react";
+import Aurora from "../components/Aurora";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -19,7 +20,8 @@ export default function SignIn() {
   return (
     <>
       <Header />
-      <main className="flex flex-col items-center justify-center bg-gradient-to-b from-black to-green-900 w-full min-h-[85vh] text-center text-green-300 px-4">
+      <main className="flex flex-col items-center justify-center w-full min-h-[85vh] text-center text-green-300 px-4">
+        <Aurora ifLanding={false} />{" "}
         <motion.section
           className="flex flex-col items-center justify-center max-w-2xl"
           variants={containerVariants}

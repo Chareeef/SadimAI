@@ -12,7 +12,7 @@ export default function Header() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.7, ease: "easeOut" }}
-      className="mb-4 h-20 bg-black/95 backdrop-blur-md border-b border-green-800/50 shadow-2xl shadow-green-900/30"
+      className="py-2 md:py-4 bg-teal-900/40 backdrop-blur-md border-b border-green-800/50 shadow-2xl shadow-green-900/50"
     >
       <div className="flex items-center justify-between h-full px-4 md:px-8 max-w-7xl mx-auto">
         {/* Logo + Title */}
@@ -27,10 +27,7 @@ export default function Header() {
               alt="Sadim Logo"
               width={56}
               height={56}
-              className="drop-shadow-lg"
             />
-            {/* Electric green glow ring */}
-            <div className="absolute inset-0 rounded-full bg-green-500 blur-xl opacity-40 scale-110 animate-pulse" />
           </motion.div>
 
           <div className="flex flex-col">

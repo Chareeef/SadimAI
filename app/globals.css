@@ -16,3 +16,36 @@ body {
 	max-width: 80%;
 	line-height: 2rem;
 }
+
+/* Dark moody aurora colors */
+:root {
+  --color-0: #0d9488;  /* teal-600 */
+  --color-1: #115e59;  /* teal-800 */
+  --color-2: #0f766e;  /* teal-700 */
+  --color-3: #1e40af;  /* blue-800 */
+  --color-4: #172554;  /* blue-900 */
+	--color-5: #2e7d32;  /* green-800 */
+	--color-6: #1b5e20;  /* green-900 */
+}
+
+/* 5 different slow-moving animations */
+@keyframes aurora-move-0 {
+  0%   { transform: translateX(-50%) translateY(-20%) scale(1.4); }
+  100% { transform: translateX(50%)  translateY(20%)  scale(1.4); }
+}
+@keyframes aurora-move-1 {
+  0%   { transform: translateX(40%) translateY(-40%) scale(1.5); }
+  100% { transform: translateX(-60%) translateY(30%) scale(1.5); }
+}
+@keyframes aurora-move-2 {
+  0%   { transform: translateX(-30%) translateY(50%) scale(1.3); }
+  100% { transform: translateX(70%) translateY(-40%) scale(1.3); }
+}
+@keyframes aurora-move-3 {
+  0%   { transform: translateX(60%) translateY(-30%) scale(1.6); }
+  100% { transform: translateX(-40%) translateY(60%) scale(1.6); }
+}
+@keyframes aurora-move-4 {
+  0%   { transform: translateX(-70%) translateY(20%) scale(1.4); }
+  100% { transform: translateX(80%) translateY(-50%) scale(1.4); }
+}
