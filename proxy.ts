@@ -17,5 +17,6 @@ export async function proxy(req: NextRequest) {
 
 // Keep your matcher exactly the same
 export const config = {
-  matcher: ["/chat/:path*", "/api/chat/:path*"], // note: :path* is safer than :path
+  // matcher: ["/chat/:path*", "/api/chat/:path*"], // note: :path* is safer than :path
+  matcher: [],
 };

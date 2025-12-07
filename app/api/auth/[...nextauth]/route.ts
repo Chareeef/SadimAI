@@ -19,6 +19,9 @@ const handler = NextAuth({
       return baseUrl;
     },
   },
+  pages: {
+    signIn: "/signin",
+  },
   debug: process.env.NODE_ENV === "development",
 });
 

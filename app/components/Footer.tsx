@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 
 export default function Footer() {
   return (
-    <footer className="flex flex-col gap-4 justify-center items-center p-4 bg-black/95 border-t-2 border-green-800/50 text-green-400 text-xl shadow-2xl shadow-green-900/30">
+    <footer className="flex flex-col gap-4 min-h-[10vh] justify-center items-center p-4 bg-black/95 border-t-2 border-green-800/50 text-green-400 text-xl shadow-2xl shadow-green-900/30">
       <h3 className="font-bold bg-gradient-to-r from-green-400 to-emerald-300 bg-clip-text text-transparent">
         Youssef Charif Hamidi
       </h3>
