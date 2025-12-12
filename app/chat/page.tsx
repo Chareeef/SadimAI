@@ -14,6 +14,7 @@ import Image from "next/image";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "./firestore";
 import { v4 as uuidv4 } from "uuid";
+import Link from "next/link";
 
 interface User {
   name?: string | null | undefined;
@@ -147,6 +148,9 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
   }
 
   useEffect(() => {
+    if (!user) {
+      return;
+    }
     // Define an async function inside useEffect
     const saveConversation = async () => {
       if (
@@ -214,42 +218,69 @@ function Aside({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
       ></button>
       {/* Profile */}
       <div className="flex md:flex-col items-center justify-around text-center py-4 shadow-lg min-h-[20%]">
-        <Image
-          src={user?.image as string}
-          alt="Profile picture"
-          width={50}
-          height={50}
-          className="rounded-full border-2 border-emerald-400"
-        />
-        {user?.name !== user?.email ? (
-          <div>
-            <p className="text-[1.25em] text-white font-mono font-bold italic mb-1">
-              {user?.name}
-            </p>
-            <p className="text-[1em] text-white font-mono font-bold break-all">
-              {user?.email}
-            </p>
-          </div>
+        {user ? (
+          <>
+            <Image
+              src={user?.image as string}
+              alt="Profile picture"
+              width={50}
+              height={50}
+              className="rounded-full border-2 border-emerald-400"
+            />
+            {user?.name !== user?.email ? (
+              <div>
+                <p className="text-[1.25em] text-white font-mono font-bold italic mb-1">
+                  {user?.name}
+                </p>
+                <p className="text-[1em] text-white font-mono font-bold break-all">
+                  {user?.email}
+                </p>
+              </div>
+            ) : (
+              <p className="text-xl text-white font-mono font-bold italic">
+                {user?.email}
+              </p>
+            )}
+          </>
         ) : (
           <p className="text-xl text-white font-mono font-bold italic">
-            {user?.email}
+            You are not logged in
           </p>
         )}
       </div>
 
       {/* History */}
       <div className="grow shadow-lg">
-        <div className="flex flex col overflow-y-auto"></div>
+        {user ? (
+          <div className="flex flex col overflow-y-auto"></div>
+        ) : (
+          <p className="hidden text-[1.25em] text-white font-boldmb-1">
+            Sign in to see your history
+          </p>
+        )}
       </div>
 
       {/* Logout */}
-      <div className="h-[3rem] p-2 flex items-center justify-center">
-        <button
-          onClick={() => signOut({ callbackUrl: "/" })}
-          className="rounded bg-rose-500 hover:bg-rose-600 px-2 py-1 my-2"
-        >
-          Sign Out
-        </button>
+      <div className="h-[3rem] p-2 flex items-center justify-center gap-2">
+        {user ? (
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="rounded bg-rose-500 hover:bg-rose-600 px-2 py-1 my-2"
+          >
+            Sign Out
+          </button>
+        ) : (
+          <Link href="/signin">
+            <button className="rounded bg-teal-500 hover:bg-teal-600 px-2 py-1 my-2">
+              Sign In
+            </button>
+          </Link>
+        )}
+        <Link href="/">
+          <button className="rounded bg-teal-500 hover:bg-teal-600 px-2 py-1 my-2">
+            Home
+          </button>
+        </Link>
       </div>
     </aside>
   );
