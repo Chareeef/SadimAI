@@ -7,9 +7,6 @@ import {
   useRef,
   useState,
 } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { doc, setDoc } from "firebase/firestore";
@@ -19,6 +16,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Icon } from "@iconify/react";
 import Aurora from "../components/Aurora";
+import Markdown from "../components/Markdown";
 
 interface User {
   name?: string | null | undefined;
@@ -69,30 +67,6 @@ function InputArea({
 
 function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
   const initialConversation: Message[] = [];
-  // const initialConversation: Message[] = [
-  //   // Dummy long conversation
-  //   {
-  //     role: "system",
-  //     content: "You are a helpful assistant.",
-  //   },
-  //   {
-  //     role: "user",
-  //     content: "What is the capital of France?",
-  //   },
-  //   {
-  //     role: "assistant",
-  //     content: "The capital of France is Paris.",
-  //   },
-  //   {
-  //     role: "user",
-  //     content: "What is the capital of Italy?",
-  //   },
-  //   {
-  //     role: "assistant",
-  //     content:
-  //       "The capital of Italy is Rome. \n Known for its rich history, culture, and cuisine. Here are 8 places to visit in Rome:\n\n1. Colosseum\n2. Vatican City\n3. Trevi Fountain\n4. Pantheon\n5. Sistine Chapel\n6. Vatican Museums\n7. Vatican Gardens\n8. St. Peter's Basilica",
-  //   },
-  // ];
   const [conversation, setConversation] =
     useState<Message[]>(initialConversation);
   const [conversationId, setConversationId] = useState<string>("");
@@ -187,10 +161,10 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [conversation]);
+  }, [conversation.at(-1)?.content]);
 
   return (
-    <main className="relative flex flex-col grow md:flex-2 text-lg bg-transparent overflow-hidden">
+    <main className="relative h-full flex flex-col grow md:col-span-3 text-lg bg-transparent overflow-hidden">
       <button
         onClick={() => setOpenAside(true)}
         className={`md:hidden fixed top-10 left-0 z-30 p-2 bg-green-600 hover:bg-green-500 rounded-r-lg transition-all ${openAside ? "-translate-x-full" : "translate-x-0"}`}
@@ -198,15 +172,14 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
         <Icon icon="mdi:menu" className="w-6 h-6 text-green-300" />
       </button>
       <div
-        className={`grow relative flex flex-col overflow-y-auto ${conversation.length === 0 && "justify-center"}`}
+        className={`grow min-h-0 relative flex flex-col ${conversation.length === 0 && "justify-center"}`}
       >
-        {" "}
         {conversation.length === 0 ? (
           <p className="text-base text-green-300 self-center text-center py-8">
             I am Sadim! Ready to help you with anything you need!
           </p>
         ) : (
-          <div className="grow relative w-full flex flex-col justify-end overflow-y-auto p-4 space-y-4">
+          <div className="grow relative w-full flex flex-col overflow-y-auto p-4 space-y-4">
             {conversation.map((message, index) => (
               <motion.div
                 key={index}
@@ -218,18 +191,12 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
                     : "bg-teal-800/50 text-teal-200 self-start"
                 }`}
               >
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeHighlight]}
-                  className="prose prose-invert prose-headings:text-green-300 prose-a:text-blue-400"
-                >
-                  {message.content}
-                </ReactMarkdown>
+                <Markdown content={message.content ?? ""} />
               </motion.div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
         )}
-        <div ref={messagesEndRef} />
       </div>
       <InputArea
         userMessage={userMessage}
@@ -246,7 +213,7 @@ function Aside({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
   return (
     <motion.aside
       ref={asideRef}
-      className={`fixed md:relative h-full md:flex-1 z-30 flex flex-col  border-r border-green-800/50 shadow-2xl shadow-green-900/30 overflow-hidden transition-transform md:transition-none duration-300 md:translate-x-0 ${
+      className={`fixed md:relative h-full md:col-span-1 z-30 flex flex-col w-[60%] md:w-full border-r border-green-800/50 shadow-2xl shadow-green-900/30 overflow-hidden transition-transform md:transition-none duration-300 md:translate-x-0 ${
         openAside ? "translate-x-0" : "-translate-x-full"
       }`}
     >
@@ -313,20 +280,20 @@ function Aside({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
 }
 
 export default function Chat() {
-  const [openAside, setOpenAside] = useState<boolean>(true); // Initially open on all, but we'll adjust for mobile
+  const [openAside, setOpenAside] = useState<boolean>(false);
   const { data: session } = useSession();
 
   const user = session?.user;
 
   useEffect(() => {
-    // Set aside closed on mobile initially
-    if (window.innerWidth < 768) {
-      setOpenAside(false);
+    // Set openAside to true if screen width is greater than or equal to 768px
+    if (window.innerWidth >= 768) {
+      setOpenAside(true);
     }
   }, []);
 
   return (
-    <div className="relative flex h-dvh overflow-hidden ">
+    <div className="relative md:grid md:grid-cols-4 h-dvh overflow-hidden ">
       <Aside openAside={openAside} setOpenAside={setOpenAside} user={user} />
       <ChatWindow
         openAside={openAside}
