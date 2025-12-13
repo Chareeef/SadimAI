@@ -9,7 +9,7 @@ import {
 } from "react";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "./firestore";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
@@ -80,18 +80,41 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
   }, [conversationId]);
 
   async function saveToFirestore() {
+    if (!user) return;
+
     const docRef = doc(
       db,
       "users",
-      user?.email as string,
+      user.email as string,
       "conversations",
       conversationId,
     );
 
     try {
-      await setDoc(docRef, { messages: conversation }, { merge: true });
+      const data: any = {
+        messages: conversation,
+        lastUpdated: serverTimestamp(),
+      };
+
+      // 🆕 Only generate title for new conversations
+      if (conversation.length <= 2) {
+        const res = await fetch("/api/chat_title", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            conversation: conversation,
+          }),
+        });
+
+        if (res.ok) {
+          const { title } = await res.json();
+          data.title = title;
+        }
+      }
+
+      await setDoc(docRef, data, { merge: true });
     } catch (error) {
-      console.error(error);
+      console.error("Failed to save conversation:", error);
     }
   }
 
@@ -155,7 +178,7 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
       conversation.length > 0 &&
       conversation[conversation.length - 1].role === "assistant"
     ) {
-      //    saveToFirestore();
+      saveToFirestore();
     }
   }, [conversation]);
 
