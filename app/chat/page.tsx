@@ -161,7 +161,7 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [conversation.at(-1)?.content]);
+  }, [conversation.length]);
 
   return (
     <main className="relative h-full flex flex-col grow md:col-span-3 text-lg bg-transparent overflow-hidden">
@@ -172,14 +172,14 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
         <Icon icon="mdi:menu" className="w-6 h-6 text-green-300" />
       </button>
       <div
-        className={`grow min-h-0 relative flex flex-col ${conversation.length === 0 && "justify-center"}`}
+        className={`grow min-h-0 relative flex flex-col ${conversation.length === 0 ? "justify-center" : "justify-end"}`}
       >
         {conversation.length === 0 ? (
           <p className="text-base text-green-300 self-center text-center py-8">
             I am Sadim! Ready to help you with anything you need!
           </p>
         ) : (
-          <div className="grow relative w-full flex flex-col overflow-y-auto p-4 space-y-4">
+          <div className="relative w-full flex flex-col overflow-y-auto p-4 space-y-4">
             {conversation.map((message, index) => (
               <motion.div
                 key={index}
