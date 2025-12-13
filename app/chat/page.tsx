@@ -16,8 +16,9 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "./firestore";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Icon } from "@iconify/react";
+import Aurora from "../components/Aurora";
 
 interface User {
   name?: string | null | undefined;
@@ -48,15 +49,16 @@ function InputArea({
   sendMessage,
 }: InputAreaProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 flex items-center p-4 bg-black/95 border-t border-green-800/50 shadow-lg z-20 md:static md:border-t-0 md:shadow-none">
+    <div className="mx-2 h-[4rem] gap-2 flex items-center px-2 py-2 border-t border-green-800/50 shadow-lg md:static md:border-t-0 md:shadow-none">
+      <Aurora />
       <textarea
-        className="grow h-12 p-3 bg-gray-900 text-green-300 border border-green-600 rounded-l-lg outline-none focus:border-green-400 resize-none overflow-hidden"
+        className="grow h-12 pb-4 pt-2 px-3 bg-gray-900 text-green-300 border border-green-600 rounded-l-lg outline-none focus:border-green-400 resize-none overflow-hidden"
         value={userMessage}
         onChange={(e) => setUserMessage(e.target.value)}
         placeholder="Type your message here..."
       />
       <button
-        className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black font-bold rounded-r-lg shadow-lg shadow-green-500/50 transition-all"
+        className="px-6 py-[10px] bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black font-bold rounded-r-lg shadow-lg shadow-green-500/50 transition-all"
         onClick={sendMessage}
       >
         Send
@@ -67,6 +69,30 @@ function InputArea({
 
 function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
   const initialConversation: Message[] = [];
+  // const initialConversation: Message[] = [
+  //   // Dummy long conversation
+  //   {
+  //     role: "system",
+  //     content: "You are a helpful assistant.",
+  //   },
+  //   {
+  //     role: "user",
+  //     content: "What is the capital of France?",
+  //   },
+  //   {
+  //     role: "assistant",
+  //     content: "The capital of France is Paris.",
+  //   },
+  //   {
+  //     role: "user",
+  //     content: "What is the capital of Italy?",
+  //   },
+  //   {
+  //     role: "assistant",
+  //     content:
+  //       "The capital of Italy is Rome. \n Known for its rich history, culture, and cuisine. Here are 8 places to visit in Rome:\n\n1. Colosseum\n2. Vatican City\n3. Trevi Fountain\n4. Pantheon\n5. Sistine Chapel\n6. Vatican Museums\n7. Vatican Gardens\n8. St. Peter's Basilica",
+  //   },
+  // ];
   const [conversation, setConversation] =
     useState<Message[]>(initialConversation);
   const [conversationId, setConversationId] = useState<string>("");
@@ -155,7 +181,7 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
       conversation.length > 0 &&
       conversation[conversation.length - 1].role === "assistant"
     ) {
-      saveToFirestore();
+      //    saveToFirestore();
     }
   }, [conversation]);
 
@@ -164,42 +190,45 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
   }, [conversation]);
 
   return (
-    <main className="relative flex flex-col grow text-lg bg-transparent overflow-hidden">
+    <main className="relative flex flex-col grow md:flex-2 text-lg bg-transparent overflow-hidden">
       <button
         onClick={() => setOpenAside(true)}
-        className={`md:hidden fixed top-1/2 left-0 z-30 p-2 bg-green-600/50 hover:bg-green-500/80 rounded-r-lg transition-all ${openAside ? "translate-x-[-100%]" : "translate-x-0"}`}
+        className={`md:hidden fixed top-10 left-0 z-30 p-2 bg-green-600 hover:bg-green-500 rounded-r-lg transition-all ${openAside ? "-translate-x-full" : "translate-x-0"}`}
       >
         <Icon icon="mdi:menu" className="w-6 h-6 text-green-300" />
       </button>
       <div
-        className={`grow flex flex-col overflow-y-auto p-4 space-y-4 ${conversation.length === 0 ? "items-center justify-center" : ""}`}
+        className={`grow relative flex flex-col overflow-y-auto ${conversation.length === 0 && "justify-center"}`}
       >
-        {conversation.length === 0 && (
+        {" "}
+        {conversation.length === 0 ? (
           <p className="text-base text-green-300 self-center text-center py-8">
             I am Sadim! Ready to help you with anything you need!
           </p>
+        ) : (
+          <div className="grow relative w-full flex flex-col justify-end overflow-y-auto p-4 space-y-4">
+            {conversation.map((message, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`p-4 rounded-lg shadow-md max-w-[80%] ${
+                  message.role === "user"
+                    ? "bg-green-800/50 text-green-200 self-end"
+                    : "bg-teal-800/50 text-teal-200 self-start"
+                }`}
+              >
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeHighlight]}
+                  className="prose prose-invert prose-headings:text-green-300 prose-a:text-blue-400"
+                >
+                  {message.content}
+                </ReactMarkdown>
+              </motion.div>
+            ))}
+          </div>
         )}
-
-        {conversation.map((message, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`p-4 rounded-lg shadow-md ${
-              message.role === "user"
-                ? "bg-green-800/50 text-green-200 self-end max-w-[80%]"
-                : "bg-teal-800/50 text-teal-200 self-start max-w-[80%]"
-            }`}
-          >
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeHighlight]}
-              className="prose prose-invert"
-            >
-              {message.content}
-            </ReactMarkdown>
-          </motion.div>
-        ))}
         <div ref={messagesEndRef} />
       </div>
       <InputArea
@@ -213,89 +242,91 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
 
 function Aside({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
   const asideRef = useRef<HTMLDivElement>(null);
+
   return (
-    <AnimatePresence>
-      {openAside && (
-        <motion.aside
-          ref={asideRef}
-          initial={{ x: "-100%" }}
-          animate={{ x: 0 }}
-          exit={{ x: "-100%" }}
-          transition={{ duration: 0.3 }}
-          className="fixed md:relative h-full w-full md:w-auto z-30 flex flex-col bg-black/95 border-r border-green-800/50 shadow-2xl shadow-green-900/30 overflow-hidden"
-        >
-          <button
-            onClick={() => setOpenAside(false)}
-            className="md:hidden absolute top-4 right-4 p-2 bg-green-600/50 hover:bg-green-500/80 rounded-full"
-          >
-            <Icon icon="mdi:close" className="w-5 h-5 text-green-300" />
+    <motion.aside
+      ref={asideRef}
+      className={`fixed md:relative h-full md:flex-1 z-30 flex flex-col  border-r border-green-800/50 shadow-2xl shadow-green-900/30 overflow-hidden transition-transform md:transition-none duration-300 md:translate-x-0 ${
+        openAside ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
+      <Aurora />
+      <button
+        onClick={() => setOpenAside(false)}
+        className="md:hidden absolute top-4 right-4 p-2 bg-green-600/50 hover:bg-green-500/80 rounded-full"
+      >
+        <Icon icon="mdi:close" className="w-5 h-5 text-green-300" />
+      </button>
+      {/* Profile */}
+      <div className="flex flex-col items-center text-center py-6 shadow-lg border-b border-green-800/50">
+        {user ? (
+          <>
+            <Image
+              src={user?.image as string}
+              alt="Profile picture"
+              width={64}
+              height={64}
+              className="rounded-full border-2 border-green-400 shadow-md"
+            />
+            <p className="text-xl text-green-300 font-bold mt-2">
+              {user?.name || user?.email}
+            </p>
+            {user?.name !== user?.email && (
+              <p className="text-sm text-green-500">{user?.email}</p>
+            )}
+          </>
+        ) : (
+          <p className="text-xl text-green-300 font-bold">Not logged in</p>
+        )}
+      </div>
+
+      {/* History (blank for now) */}
+      <div className="grow p-4 overflow-y-auto">
+        {/* Placeholder for history */}
+        <p className="text-green-500 text-center"></p>
+      </div>
+
+      {/* Actions */}
+      <div className="p-2 flex flex-wrap items-center  h-[4rem] justify-center gap-4 border-t border-green-800/50">
+        <Link href="/">
+          <button className="p-2 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-black font-medium rounded-lg shadow-md shadow-teal-500/50 transition-all">
+            Home
           </button>
-          <div className="hidden md:block absolute right-0 top-0 bottom-0 w-1 bg-green-600/50" />
-          {/* Profile */}
-          <div className="flex flex-col items-center text-center py-6 shadow-lg border-b border-green-800/50">
-            {user ? (
-              <>
-                <Image
-                  src={user?.image as string}
-                  alt="Profile picture"
-                  width={64}
-                  height={64}
-                  className="rounded-full border-2 border-green-400 shadow-md"
-                />
-                <p className="text-xl text-green-300 font-bold mt-2">
-                  {user?.name || user?.email}
-                </p>
-                {user?.name !== user?.email && (
-                  <p className="text-sm text-green-500">{user?.email}</p>
-                )}
-              </>
-            ) : (
-              <p className="text-xl text-green-300 font-bold">Not logged in</p>
-            )}
-          </div>
-
-          {/* History (blank for now) */}
-          <div className="grow p-4 overflow-y-auto">
-            {/* Placeholder for history */}
-            <p className="text-green-500 text-center">History coming soon...</p>
-          </div>
-
-          {/* Actions */}
-          <div className="p-4 flex items-center justify-center gap-4 border-t border-green-800/50">
-            {user ? (
-              <button
-                onClick={() => signOut({ callbackUrl: "/" })}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-lg transition-colors"
-              >
-                Sign Out
-              </button>
-            ) : (
-              <Link href="/signin">
-                <button className="px-4 py-2 bg-green-500 hover:bg-green-600 text-black font-medium rounded-lg transition-colors">
-                  Sign In
-                </button>
-              </Link>
-            )}
-            <Link href="/">
-              <button className="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-black font-medium rounded-lg transition-colors">
-                Home
-              </button>
-            </Link>
-          </div>
-        </motion.aside>
-      )}
-    </AnimatePresence>
+        </Link>
+        {user ? (
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="p-2 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-medium rounded-lg shadow-md shadow-rose-500/50 transition-all"
+          >
+            Sign Out
+          </button>
+        ) : (
+          <Link href="/signin">
+            <button className=" px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black font-medium rounded-lg shadow-md shadow-green-500/50 transition-all">
+              Sign In
+            </button>
+          </Link>
+        )}
+      </div>
+    </motion.aside>
   );
 }
 
 export default function Chat() {
-  const [openAside, setOpenAside] = useState<boolean>(false);
+  const [openAside, setOpenAside] = useState<boolean>(true); // Initially open on all, but we'll adjust for mobile
   const { data: session } = useSession();
 
   const user = session?.user;
 
+  useEffect(() => {
+    // Set aside closed on mobile initially
+    if (window.innerWidth < 768) {
+      setOpenAside(false);
+    }
+  }, []);
+
   return (
-    <div className="relative flex h-dvh overflow-hidden bg-black">
+    <div className="relative flex h-dvh overflow-hidden ">
       <Aside openAside={openAside} setOpenAside={setOpenAside} user={user} />
       <ChatWindow
         openAside={openAside}
