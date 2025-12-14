@@ -9,7 +9,17 @@ import {
 } from "react";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  doc,
+  serverTimestamp,
+  setDoc,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  getDoc,
+  FieldValue,
+} from "firebase/firestore";
 import { db } from "./firestore";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
@@ -35,10 +45,58 @@ interface InputAreaProps {
   sendMessage: MouseEventHandler<HTMLButtonElement>;
 }
 
-interface OpenAsideAndUserProps {
+interface ChatWindowProps {
   openAside: boolean;
   setOpenAside: Dispatch<SetStateAction<boolean>>;
   user: User | undefined;
+  conversation: Message[];
+  setConversation: Dispatch<SetStateAction<Message[]>>;
+  conversationId: string;
+  setConversationId: Dispatch<SetStateAction<string>>;
+}
+
+interface AsideProps {
+  openAside: boolean;
+  setOpenAside: Dispatch<SetStateAction<boolean>>;
+  user: User | undefined;
+  setConversation: Dispatch<SetStateAction<Message[]>>;
+  currentConversationId: string;
+  setConversationId: Dispatch<SetStateAction<string>>;
+}
+
+interface ConversationMeta {
+  id: string;
+  title: string;
+  lastUpdated: any;
+}
+
+function useConversationHistory(user: User | undefined): ConversationMeta[] {
+  const [conversationHistory, setConversationHistory] = useState<
+    ConversationMeta[]
+  >([]);
+
+  useEffect(() => {
+    if (!user?.email) return;
+
+    const q = query(
+      collection(db, "users", user.email, "conversations"),
+      orderBy("lastUpdated", "desc"),
+    );
+
+    const unsub = onSnapshot(q, (snapshot) => {
+      setConversationHistory(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          title: doc.data().title ?? "Untitled conversation",
+          lastUpdated: doc.data().lastUpdated,
+        })),
+      );
+    });
+
+    return () => unsub();
+  }, [user?.email]);
+
+  return conversationHistory;
 }
 
 function InputArea({
@@ -65,39 +123,55 @@ function InputArea({
   );
 }
 
-function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
-  const initialConversation: Message[] = [];
-  const [conversation, setConversation] =
-    useState<Message[]>(initialConversation);
-  const [conversationId, setConversationId] = useState<string>("");
+function ChatWindow({
+  openAside,
+  setOpenAside,
+  user,
+  conversation,
+  setConversation,
+  conversationId,
+  setConversationId,
+}: ChatWindowProps) {
   const [userMessage, setUserMessage] = useState<string>("");
+  const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!conversationId) {
-      setConversationId(uuidv4());
-    }
-  }, [conversationId]);
 
   async function saveToFirestore() {
     if (!user) return;
 
-    const docRef = doc(
-      db,
-      "users",
-      user.email as string,
-      "conversations",
-      conversationId,
-    );
+    const ref =
+      conversationId !== ""
+        ? doc(
+            db,
+            "users",
+            user.email as string,
+            "conversations",
+            conversationId,
+          )
+        : null;
+
+    const snap = ref && (await getDoc(ref));
+
+    if (snap?.exists()) {
+      if (snap.data().messages.length === conversation.length) {
+        return;
+      }
+    }
 
     try {
-      const data: any = {
+      const data: {
+        conversationId: string;
+        messages: Message[];
+        title?: string;
+        lastUpdated: FieldValue;
+      } = {
+        conversationId: conversationId,
         messages: conversation,
         lastUpdated: serverTimestamp(),
       };
 
-      // 🆕 Only generate title for new conversations
-      if (conversation.length <= 2) {
+      // Only generate title for new conversations
+      if (conversationId === "") {
         const res = await fetch("/api/chat_title", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -109,8 +183,18 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
         if (res.ok) {
           const { title } = await res.json();
           data.title = title;
+          data.conversationId = `${title.toLowerCase().replace(/\s+/g, "-")}-${uuidv4()}`;
+          setConversationId(data.conversationId);
         }
       }
+
+      const docRef = doc(
+        db,
+        "users",
+        user.email as string,
+        "conversations",
+        data.conversationId,
+      );
 
       await setDoc(docRef, data, { merge: true });
     } catch (error) {
@@ -128,6 +212,7 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
     ]);
 
     setUserMessage("");
+    setIsStreaming(true);
 
     try {
       const response = await fetch("/api/chat/", {
@@ -140,6 +225,7 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
       });
 
       if (!response.body) {
+        setIsStreaming(false);
         console.error("response.body is not found");
         return;
       }
@@ -152,6 +238,7 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
           await reader.read();
 
         if (done) {
+          setIsStreaming(false);
           break;
         } else if (value) {
           const chunk = decoder.decode(value, { stream: true });
@@ -165,22 +252,23 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
         }
       }
     } catch (error) {
+      setIsStreaming(false);
       console.error(error);
-      // Display flash message
     }
   }
 
   useEffect(() => {
-    if (!user) {
+    if (!user || isStreaming) {
       return;
     }
     if (
-      conversation.length > 0 &&
-      conversation[conversation.length - 1].role === "assistant"
+      conversation.length > 1 &&
+      conversation[conversation.length - 1].role === "assistant" &&
+      conversation[conversation.length - 1].content
     ) {
       saveToFirestore();
     }
-  }, [conversation]);
+  }, [conversation, user, isStreaming]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -230,8 +318,78 @@ function ChatWindow({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
   );
 }
 
-function Aside({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
+function Aside({
+  openAside,
+  setOpenAside,
+  user,
+  setConversation,
+  currentConversationId,
+  setConversationId,
+}: AsideProps) {
   const asideRef = useRef<HTMLDivElement>(null);
+  const conversationHistory = useConversationHistory(user);
+
+  function formatDate(date: Date): string {
+    let timeDifferenceInMinutes = Math.floor(
+      (Date.now() - date.getTime()) / 1000 / 60,
+    );
+    if (timeDifferenceInMinutes < 1) {
+      return "Just now";
+    } else if (timeDifferenceInMinutes < 60) {
+      // less than 1 hour
+      return `${timeDifferenceInMinutes} minute${timeDifferenceInMinutes === 1 ? "" : "s"} ago`;
+    } else if (timeDifferenceInMinutes < 60 * 24) {
+      // less than 1 day
+      const hours = Math.floor(timeDifferenceInMinutes / 60);
+      return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+    } else if (timeDifferenceInMinutes < 60 * 24 * 7) {
+      // less than 1 week
+      const days = Math.floor(timeDifferenceInMinutes / (60 * 24));
+      return `${days} day${days === 1 ? "" : "s"} ago`;
+    } else if (timeDifferenceInMinutes < 60 * 24 * 30) {
+      // less than 1 month
+      const weeks = Math.floor(timeDifferenceInMinutes / (60 * 24 * 7));
+      return `${weeks} week${weeks === 1 ? "" : "s"} ago`;
+    } else if (timeDifferenceInMinutes < 60 * 24 * 365) {
+      // less than 1 year
+      const months = Math.floor(timeDifferenceInMinutes / (60 * 24 * 30));
+      return `${months} month${months === 1 ? "" : "s"} ago`;
+    } else {
+      // more than 1 year
+      // DD/MM/YYYY
+      return `${date.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}`;
+    }
+  }
+
+  async function loadConversation(conversationId: string) {
+    if (!user || conversationId === "") return;
+
+    const ref = doc(
+      db,
+      "users",
+      user.email as string,
+      "conversations",
+      conversationId,
+    );
+
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+      setConversationId(conversationId);
+      setConversation(snap.data().messages || []);
+    }
+  }
+
+  function handleNewChat() {
+    setConversationId("");
+    setConversation([]);
+    setOpenAside(false);
+  }
+
+  function handleSelectConversation(conversationId: string) {
+    loadConversation(conversationId);
+    setOpenAside(false);
+  }
 
   return (
     <motion.aside
@@ -270,19 +428,29 @@ function Aside({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
         )}
       </div>
 
-      {/* History (blank for now) */}
-      <div className="grow p-4 overflow-y-auto">
-        {/* Placeholder for history */}
-        <p className="text-green-500 text-center"></p>
+      {/* History  */}
+      <div className="grow p-4 overflow-y-auto space-y-2">
+        {conversationHistory.map((conv) => (
+          <button
+            key={conv.id}
+            onClick={() => handleSelectConversation(conv.id)}
+            className={`w-full text-left p-3 rounded-lg ${conv.id === currentConversationId ? "bg-green-800/50" : "bg-green-900/40"} hover:bg-green-800/60 transition`}
+          >
+            <p className="text-green-300 font-medium truncate">{conv.title}</p>
+            <p className="text-xs text-green-500">
+              {formatDate(conv.lastUpdated?.toDate() || new Date())}
+            </p>
+          </button>
+        ))}
       </div>
-
       {/* Actions */}
       <div className="p-2 flex flex-wrap items-center  h-[4rem] justify-center gap-4 border-t border-green-800/50">
-        <Link href="/">
-          <button className="p-2 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-black font-medium rounded-lg shadow-md shadow-teal-500/50 transition-all">
-            Home
-          </button>
-        </Link>
+        <button
+          onClick={handleNewChat}
+          className="p-2 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-black font-medium rounded-lg shadow-md shadow-teal-500/50 transition-all"
+        >
+          New Chat
+        </button>
         {user ? (
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
@@ -305,6 +473,8 @@ function Aside({ openAside, setOpenAside, user }: OpenAsideAndUserProps) {
 export default function Chat() {
   const [openAside, setOpenAside] = useState<boolean>(false);
   const { data: session } = useSession();
+  const [conversation, setConversation] = useState<Message[]>([]);
+  const [conversationId, setConversationId] = useState<string>("");
 
   const user = session?.user;
 
@@ -317,11 +487,23 @@ export default function Chat() {
 
   return (
     <div className="relative md:grid md:grid-cols-4 h-dvh overflow-hidden ">
-      <Aside openAside={openAside} setOpenAside={setOpenAside} user={user} />
+      <Aside
+        openAside={openAside}
+        setOpenAside={setOpenAside}
+        user={user}
+        setConversation={setConversation}
+        currentConversationId={conversationId}
+        setConversationId={setConversationId}
+      />
+
       <ChatWindow
         openAside={openAside}
         setOpenAside={setOpenAside}
         user={user}
+        conversation={conversation}
+        setConversation={setConversation}
+        conversationId={conversationId}
+        setConversationId={setConversationId}
       />
     </div>
   );
