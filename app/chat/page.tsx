@@ -19,6 +19,7 @@ import {
   query,
   getDoc,
   FieldValue,
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "./firestore";
 import { v4 as uuidv4 } from "uuid";
@@ -391,6 +392,25 @@ function Aside({
     setOpenAside(false);
   }
 
+  async function handleDeleteConversation(conversationId: string) {
+    if (conversationId === currentConversationId) {
+      handleNewChat();
+    }
+    const ref = doc(
+      db,
+      "users",
+      user?.email as string,
+      "conversations",
+      conversationId,
+    );
+
+    try {
+      await deleteDoc(ref);
+    } catch (error) {
+      console.error("Error deleting conversation:", error);
+    }
+  }
+
   return (
     <motion.aside
       ref={asideRef}
@@ -430,17 +450,60 @@ function Aside({
 
       {/* History  */}
       <div className="grow p-4 overflow-y-auto space-y-2">
+        {!user && (
+          <div className="flex flex-col items-center justify-center h-full">
+            <p className="text-xl text-green-300 text-center font-bold">
+              Sign in to see your chat history
+            </p>
+          </div>
+        )}
         {conversationHistory.map((conv) => (
-          <button
+          <div
             key={conv.id}
             onClick={() => handleSelectConversation(conv.id)}
-            className={`w-full text-left p-3 rounded-lg ${conv.id === currentConversationId ? "bg-green-800/50" : "bg-green-900/40"} hover:bg-green-800/60 transition`}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                handleSelectConversation(conv.id);
+              }
+            }}
+            className={`w-full text-left p-3 relative min-w-0 rounded-lg group ${conv.id === currentConversationId ? "bg-green-800/50" : "bg-green-900/40"} hover:bg-green-800/60 transition-all duration-200
+  `}
           >
-            <p className="text-green-300 font-medium truncate">{conv.title}</p>
-            <p className="text-xs text-green-500">
+            {/* Title with truncate by default, scroll on hover */}
+            <p
+              className="text-green-300 font-medium
+                truncate
+                group-hover:whitespace-normal
+                group-hover:text-clip
+                group-hover:overflow-visible
+                group-hover:pr-10
+                transition-all
+              "
+            >
+              {conv.title}
+            </p>
+
+            {/* Date - always visible */}
+            <p className="text-xs text-green-500 mt-1">
               {formatDate(conv.lastUpdated?.toDate() || new Date())}
             </p>
-          </button>
+
+            {/* Trash button - hidden by default, appears on hover */}
+            <div className="absolute inset-y-0 right-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteConversation(conv.id);
+                }}
+                className="p-2 bg-red-600 hover:bg-red-500 rounded-lg"
+                aria-label="Delete conversation"
+              >
+                <Icon icon="mdi:trash-can" className="w-5 h-5 text-white" />
+              </button>
+            </div>
+          </div>
         ))}
       </div>
       {/* Actions */}
