@@ -1,22 +1,25 @@
-export default function Aurora({ ifLanding = true }) {
-  const colorsIndices = ifLanding ? [0, 1, 2, 3, 4] : [4, 5, 6];
+type AuroraProps = {
+  ifLanding?: boolean;
+  className?: string;
+};
 
+export default function Aurora({
+  ifLanding = true,
+  className = "",
+}: AuroraProps) {
   return (
-    <div className="fixed inset-0 -z-10">
-      <div className="absolute inset-0 bg-black" />
-
-      {colorsIndices.map((i, index) => (
-        <div
-          key={i}
-          className="absolute top-0 left-0 w-full h-full opacity-40"
-          style={{
-            background: `linear-gradient(90deg, transparent, var(--color-${i}) 50%, transparent)`,
-            filter: "blur(80px)",
-            transform: `rotate(${index * 22}deg) scale(1.5)`, // slightly more spread
-            animation: `aurora-move-${index} ${24 + index * 6}s ease-in-out infinite alternate`,
-          }}
-        />
-      ))}
+    <div
+      className={`nebula-scene fixed inset-0 -z-10 overflow-hidden ${className}`}
+      aria-hidden="true"
+    >
+      <div className="nebula-base absolute inset-0" />
+      <div className="nebula-stars absolute inset-0" />
+      <div className="nebula-grid absolute inset-0" />
+      <div className="nebula-orb nebula-orb-one" />
+      <div className="nebula-orb nebula-orb-two" />
+      <div className="nebula-orb nebula-orb-three" />
+      {ifLanding && <div className="nebula-orb nebula-orb-four" />}
+      <div className="nebula-vignette absolute inset-0" />
     </div>
   );
 }

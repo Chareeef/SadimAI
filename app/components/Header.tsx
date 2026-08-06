@@ -1,73 +1,91 @@
 "use client";
-import { signIn, signOut, useSession } from "next-auth/react";
+
+import { Icon } from "@iconify/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
+
+const navigation = [
+  { href: "/", label: "Home" },
+  { href: "/#capabilities", label: "Capabilities" },
+];
 
 export default function Header() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const pathname = usePathname();
 
   return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.7, ease: "easeOut" }}
-      className="py-2 md:py-4 bg-teal-900/40 backdrop-blur-md border-b border-green-800/50 shadow-2xl shadow-green-900/50"
-    >
-      <div className="flex items-center justify-between h-full px-4 md:px-8 max-w-7xl mx-auto">
-        {/* Logo + Title */}
-        <Link href="/" className="flex items-center space-x-2">
-          <motion.div
-            whileHover={{ rotate: 360 }}
-            transition={{ duration: 0.6 }}
-            className="relative"
-          >
+    <header className="sticky top-0 z-50 border-b border-white/[0.07] bg-[#030807]/75 backdrop-blur-2xl">
+      <div className="mx-auto flex h-[72px] w-full max-w-7xl items-center justify-between px-5 sm:px-8">
+        <Link
+          href="/"
+          className="group flex items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+          aria-label="Sadim home"
+        >
+          <span className="relative grid size-10 place-items-center rounded-xl border border-emerald-300/20 bg-emerald-300/[0.07] shadow-[0_0_28px_rgba(52,211,153,0.12)] transition-transform duration-300 group-hover:scale-105">
             <Image
               src="/Sadim_Logo.png"
-              alt="Sadim Logo"
-              width={56}
-              height={56}
-              className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-teal-400/50"
+              alt=""
+              width={40}
+              height={40}
+              className="size-8 rounded-full"
+              priority
             />
-          </motion.div>
-
-          <div className="flex flex-col">
-            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-400 to-emerald-300 bg-clip-text text-transparent">
+          </span>
+          <span>
+            <span className="block text-[17px] font-semibold leading-none tracking-[-0.03em] text-white">
               Sadim
-            </h1>
-          </div>
+            </span>
+            <span className="mt-1 hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-300/60 sm:block">
+              Nebula intelligence
+            </span>
+          </span>
         </Link>
 
-        {/* Nav - Responsive with text on all screens */}
-        <nav className="flex items-center space-x-3 md:space-x-6">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 md:px-8 md:py-3 text-sm md:text-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black font-bold rounded-full shadow-sm shadow-green-500/50 transition-all"
-          >
-            <Link href="/chat">Chat</Link>
-          </motion.button>
-          {session?.user ? (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => signOut()}
-              className="px-4 py-2 md:px-6 md:py-3 text-sm md:text-xl border-2 border-green-500 text-green-400 hover:bg-green-500/20 rounded-full font-medium transition-all shadow-sm shadow-green-500/50"
-            >
-              Sign Out
-            </motion.button>
-          ) : (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => signIn()}
-              className="px-4 py-2 md:px-8 md:py-3 text-sm md:text-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black font-bold rounded-full shadow-sm shadow-green-500/50 transition-all"
-            >
-              Sign In
-            </motion.button>
-          )}
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
+          {navigation.map((item) => {
+            const active =
+              item.href === "/" && pathname === "/" && !item.href.includes("#");
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`rounded-full px-4 py-2 text-sm transition-colors ${
+                  active
+                    ? "bg-white/[0.06] text-white"
+                    : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-100"
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
+
+        <div className="flex items-center gap-2">
+          {status !== "loading" && session?.user && (
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="hidden min-h-10 rounded-full px-4 text-sm font-medium text-slate-400 transition-colors hover:bg-white/[0.05] hover:text-white sm:block"
+            >
+              Sign out
+            </button>
+          )}
+          <Link
+            href="/chat"
+            className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-emerald-300 px-4 text-sm font-semibold text-emerald-950 shadow-[0_10px_35px_rgba(52,211,153,0.16)] transition-all hover:-translate-y-0.5 hover:bg-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#030807] sm:px-5"
+          >
+            {session?.user ? "Open workspace" : "Start chatting"}
+            <Icon
+              icon="solar:arrow-right-linear"
+              className="size-4 transition-transform group-hover:translate-x-0.5"
+            />
+          </Link>
+        </div>
       </div>
-    </motion.header>
+    </header>
   );
 }

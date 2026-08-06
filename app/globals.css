@@ -2,50 +2,201 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ink: #020605;
+  --surface: #07100e;
+  --surface-strong: #0a1714;
+  --line: rgba(255, 255, 255, 0.08);
+  --mint: #6ee7b7;
+  --emerald: #34d399;
+  --teal: #0d9488;
+  --blue: #1e40af;
+  --color-0: #0d9488;
+  --color-1: #115e59;
+  --color-2: #0f766e;
+  --color-3: #1e40af;
+  --color-4: #172554;
+  --color-5: #2e7d32;
+  --color-6: #1b5e20;
+}
+
 * {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--ink);
 }
 
 body {
-	background-color: #000;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--ink);
+  color: #f8fafc;
 }
 
-.message {
-	max-width: 80%;
-	line-height: 2rem;
+button,
+a,
+textarea {
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Dark moody aurora colors */
-:root {
-  --color-0: #0d9488;  /* teal-600 */
-  --color-1: #115e59;  /* teal-800 */
-  --color-2: #0f766e;  /* teal-700 */
-  --color-3: #1e40af;  /* blue-800 */
-  --color-4: #172554;  /* blue-900 */
-	--color-5: #2e7d32;  /* green-800 */
-	--color-6: #1b5e20;  /* green-900 */
+button,
+a {
+  touch-action: manipulation;
 }
 
-/* 5 different slow-moving animations */
-@keyframes aurora-move-0 {
-  0%   { transform: translateX(-50%) translateY(-20%) scale(1.4); }
-  100% { transform: translateX(50%)  translateY(20%)  scale(1.4); }
+button:disabled {
+  cursor: not-allowed;
 }
-@keyframes aurora-move-1 {
-  0%   { transform: translateX(40%) translateY(-40%) scale(1.5); }
-  100% { transform: translateX(-60%) translateY(30%) scale(1.5); }
+
+::selection {
+  background: rgba(52, 211, 153, 0.28);
+  color: #ecfdf5;
 }
-@keyframes aurora-move-2 {
-  0%   { transform: translateX(-30%) translateY(50%) scale(1.3); }
-  100% { transform: translateX(70%) translateY(-40%) scale(1.3); }
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
-@keyframes aurora-move-3 {
-  0%   { transform: translateX(60%) translateY(-30%) scale(1.6); }
-  100% { transform: translateX(-40%) translateY(60%) scale(1.6); }
+
+::-webkit-scrollbar-track {
+  background: transparent;
 }
-@keyframes aurora-move-4 {
-  0%   { transform: translateX(-70%) translateY(20%) scale(1.4); }
-  100% { transform: translateX(80%) translateY(-50%) scale(1.4); }
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(110, 231, 183, 0.18);
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(110, 231, 183, 0.32);
+  background-clip: padding-box;
+}
+
+.nebula-base {
+  background:
+    radial-gradient(circle at 50% -20%, rgba(6, 78, 59, 0.34), transparent 42%),
+    linear-gradient(180deg, #030908 0%, #020605 62%, #010303 100%);
+}
+
+.nebula-stars {
+  opacity: 0.32;
+  background-image:
+    radial-gradient(circle, rgba(167, 243, 208, 0.85) 0 0.7px, transparent 0.9px),
+    radial-gradient(circle, rgba(147, 197, 253, 0.65) 0 0.6px, transparent 0.8px);
+  background-position: 0 0, 42px 67px;
+  background-size: 92px 92px, 137px 137px;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+
+.nebula-grid {
+  opacity: 0.2;
+  background-image:
+    linear-gradient(rgba(110, 231, 183, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(110, 231, 183, 0.055) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse at 50% 30%, black, transparent 72%);
+}
+
+.nebula-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.3;
+  will-change: transform;
+}
+
+.nebula-orb-one {
+  left: -12vw;
+  top: -8vh;
+  width: 54vw;
+  height: 48vw;
+  background: #0f766e;
+  animation: nebula-drift-one 22s ease-in-out infinite alternate;
+}
+
+.nebula-orb-two {
+  right: -18vw;
+  top: 8vh;
+  width: 48vw;
+  height: 42vw;
+  background: #172554;
+  animation: nebula-drift-two 28s ease-in-out infinite alternate;
+}
+
+.nebula-orb-three {
+  bottom: -28vw;
+  left: 32vw;
+  width: 46vw;
+  height: 46vw;
+  background: #14532d;
+  opacity: 0.22;
+  animation: nebula-drift-three 30s ease-in-out infinite alternate;
+}
+
+.nebula-orb-four {
+  right: 18vw;
+  top: 56vh;
+  width: 30vw;
+  height: 30vw;
+  background: #0f766e;
+  opacity: 0.17;
+  animation: nebula-drift-one 26s ease-in-out infinite alternate-reverse;
+}
+
+.nebula-vignette {
+  box-shadow: inset 0 0 180px 40px rgba(0, 0, 0, 0.62);
+}
+
+.glass-panel {
+  border: 1px solid var(--line);
+  background: linear-gradient(145deg, rgba(10, 24, 21, 0.82), rgba(4, 11, 10, 0.68));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(24px);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+@keyframes nebula-drift-one {
+  from { transform: translate3d(-4%, -5%, 0) scale(0.92); }
+  to { transform: translate3d(16%, 12%, 0) scale(1.08); }
+}
+
+@keyframes nebula-drift-two {
+  from { transform: translate3d(8%, -8%, 0) scale(1); }
+  to { transform: translate3d(-18%, 16%, 0) scale(1.12); }
+}
+
+@keyframes nebula-drift-three {
+  from { transform: translate3d(-8%, 10%, 0) scale(0.96); }
+  to { transform: translate3d(12%, -16%, 0) scale(1.08); }
+}
+
+@media (max-width: 640px) {
+  .nebula-orb {
+    filter: blur(64px);
+  }
+
+  .nebula-orb-one,
+  .nebula-orb-two {
+    width: 90vw;
+    height: 90vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
