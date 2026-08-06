@@ -1,9 +1,9 @@
 "use client";
 
 import ReactMarkdown, { Components } from "react-markdown";
-import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import remarkGfm from "remark-gfm";
 
 type Props = {
   content: string;
@@ -19,21 +19,19 @@ const schema = {
 
 export default function Markdown({ content }: Props) {
   const components: Components = {
+    a({ children, ...props }) {
+      return (
+        <a {...props} target="_blank" rel="noopener noreferrer">
+          {children}
+        </a>
+      );
+    },
     code({ className, children, ...props }) {
-      // const match = /language-(\w+)/.exec(className || "");
-
-      // if (match) {
-      //   return (
-      //     <pre className="relative overflow-x-auto rounded-lg bg-green-900/40 border border-green-800/50 shadow-2xl shadow-green-900/30 p-3">
-      //       <code className={className} {...props}>
-      //         {String(children).replace(/\n$/, "")}
-      //       </code>
-      //     </pre>
-      //   );
-      // }
-
-      // ✅ Inline code
-      return <code className="rounded text-sm">{children}</code>;
+      return (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
     },
   };
 
@@ -41,17 +39,7 @@ export default function Markdown({ content }: Props) {
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       rehypePlugins={[[rehypeSanitize, schema], rehypeHighlight]}
-      className="
-        prose
-        prose-invert
-        max-w-none
-        prose-headings:text-green-300
-        prose-a:text-blue-400
-        prose-code:text-green-200
-        prose-pre:bg-zinc-900
-        prose-pre:border
-        prose-pre:border-zinc-700
-      "
+      className="prose prose-sm prose-invert max-w-none break-words prose-headings:mb-3 prose-headings:mt-6 prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-slate-100 prose-p:my-3 prose-p:leading-7 prose-p:text-slate-300 prose-a:text-emerald-300 prose-a:no-underline hover:prose-a:text-emerald-200 prose-strong:text-slate-100 prose-code:rounded-md prose-code:bg-white/[0.07] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.82em] prose-code:text-emerald-200 prose-code:before:content-none prose-code:after:content-none prose-pre:my-4 prose-pre:overflow-x-auto prose-pre:rounded-2xl prose-pre:border prose-pre:border-white/[0.08] prose-pre:bg-[#020706] prose-pre:p-4 prose-li:my-1 prose-li:text-slate-300 prose-blockquote:border-emerald-300/30 prose-blockquote:text-slate-400 prose-hr:border-white/10 prose-table:block prose-table:overflow-x-auto"
       components={components}
     >
       {content}
