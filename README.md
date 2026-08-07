@@ -2,7 +2,7 @@
 
 Sadim (Arabic for "Nebula") is an AI-powered chatbot designed to deliver smooth, human-like conversations with rapid inference, all within an intuitive and user-friendly interface. Built with Next.js and powered by Groq API, Sadim brings advanced AI capabilities to users with an emphasis on speed, accessibility, and seamless interaction.
 
-![1000105412](https://github.com/user-attachments/assets/8b674a3c-b348-4903-abdb-eb9c814b3190)
+![Sadim landing page](docs/images/sadim-home.png)
 
 
 ## Features
@@ -16,7 +16,9 @@ Sadim (Arabic for "Nebula") is an AI-powered chatbot designed to deliver smooth,
 
 You can try out Sadim at [sadim-ai.com](https://sadim-ai.com).
 
-![1000105605](https://github.com/user-attachments/assets/5932b924-b4df-4b08-8f35-56e58c5b465f)
+![Sadim sign-in page](docs/images/sadim-signin.png)
+
+![Sadim chat workspace](docs/images/sadim-chat.png)
 
 
 ## Technologies Used
