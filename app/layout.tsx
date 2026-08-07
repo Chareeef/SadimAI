@@ -3,13 +3,16 @@ import { Inter } from "next/font/google";
 import Providers from "./components/Providers";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
-import "highlight.js/styles/tomorrow-night-blue.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Sadim AI",
-  description: "AI Chatbot for all your needs.",
+  title: {
+    default: "Sadim AI — Fast thinking, beautifully clear",
+    template: "%s · Sadim AI",
+  },
+  description:
+    "A fast, focused AI workspace for ideas, answers, writing, and everyday problem-solving.",
 };
 
 export default function RootLayout({
@@ -44,7 +47,7 @@ export default function RootLayout({
         />
       </head>
 
-      <body className={`${inter.className}`}>
+      <body className={`${inter.className} antialiased`}>
         <Providers>{children}</Providers>
         <Analytics />
       </body>
