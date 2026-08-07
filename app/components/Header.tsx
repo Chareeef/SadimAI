@@ -25,11 +25,11 @@ export default function Header() {
         >
           <span className="relative grid size-10 place-items-center rounded-xl border border-emerald-300/20 bg-emerald-300/[0.07] shadow-[0_0_28px_rgba(52,211,153,0.12)] transition-transform duration-300 group-hover:scale-105">
             <Image
-              src="/Sadim_Logo.png"
+              src="/navbar-logo.png"
               alt=""
               width={40}
               height={40}
-              className="size-8 rounded-full"
+              className="size-8 rounded-full object-cover"
               priority
             />
           </span>
