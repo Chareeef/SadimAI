@@ -55,7 +55,7 @@ export default function Header() {
                 className={`rounded-full px-4 py-2 text-sm transition-colors ${
                   active
                     ? "bg-white/[0.06] text-white"
-                    : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-100"
+                    : "text-emerald-50/70 hover:bg-white/[0.04] hover:text-white"
                 }`}
               >
                 {item.label}
@@ -65,20 +65,31 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          {pathname === "/" && status !== "loading" && !session?.user && (
+            <Link
+              href="/signin"
+              className="inline-flex min-h-10 items-center justify-center rounded-full px-3 py-2.5 text-sm font-semibold text-emerald-50/80 transition-colors hover:bg-white/[0.05] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300/60 sm:px-4"
+            >
+              Sign in
+            </Link>
+          )}
           {status !== "loading" && session?.user && (
             <button
               type="button"
               onClick={() => signOut({ callbackUrl: "/" })}
-              className="hidden min-h-10 rounded-full px-4 text-sm font-medium text-slate-400 transition-colors hover:bg-white/[0.05] hover:text-white sm:block"
+              className="hidden min-h-10 rounded-full px-4 py-2.5 text-sm font-medium text-emerald-50/70 transition-colors hover:bg-white/[0.05] hover:text-white sm:block"
             >
               Sign out
             </button>
           )}
           <Link
             href="/chat"
-            className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-emerald-300 px-4 text-sm font-semibold text-emerald-950 shadow-[0_10px_35px_rgba(52,211,153,0.16)] transition-all hover:-translate-y-0.5 hover:bg-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#030807] sm:px-5"
+            className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-emerald-300 px-4 py-2.5 text-sm font-semibold text-emerald-950 shadow-[0_10px_35px_rgba(52,211,153,0.16)] transition-all hover:-translate-y-0.5 hover:bg-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#030807] sm:px-5"
           >
-            {session?.user ? "Open workspace" : "Start chatting"}
+            <span className="sm:hidden">{session?.user ? "Open" : "Chat"}</span>
+            <span className="hidden sm:inline">
+              {session?.user ? "Open workspace" : "Start chatting"}
+            </span>
             <Icon
               icon="solar:arrow-right-linear"
               className="size-4 transition-transform group-hover:translate-x-0.5"

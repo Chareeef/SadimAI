@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --ink: #020605;
+  --ink: #020a06;
   --surface: #07100e;
   --surface-strong: #0a1714;
   --line: rgba(255, 255, 255, 0.08);
@@ -79,12 +79,13 @@ button:disabled {
 
 .nebula-base {
   background:
-    radial-gradient(circle at 50% -20%, rgba(6, 78, 59, 0.34), transparent 42%),
-    linear-gradient(180deg, #030908 0%, #020605 62%, #010303 100%);
+    radial-gradient(circle at 48% -18%, rgba(16, 185, 129, 0.28), transparent 46%),
+    radial-gradient(circle at 8% 55%, rgba(5, 150, 105, 0.14), transparent 38%),
+    linear-gradient(180deg, #06130e 0%, #03100b 52%, #020906 100%);
 }
 
 .nebula-stars {
-  opacity: 0.32;
+  opacity: 0.38;
   background-image:
     radial-gradient(circle, rgba(167, 243, 208, 0.85) 0 0.7px, transparent 0.9px),
     radial-gradient(circle, rgba(147, 197, 253, 0.65) 0 0.6px, transparent 0.8px);
@@ -94,7 +95,7 @@ button:disabled {
 }
 
 .nebula-grid {
-  opacity: 0.2;
+  opacity: 0.24;
   background-image:
     linear-gradient(rgba(110, 231, 183, 0.055) 1px, transparent 1px),
     linear-gradient(90deg, rgba(110, 231, 183, 0.055) 1px, transparent 1px);
@@ -106,7 +107,7 @@ button:disabled {
   position: absolute;
   border-radius: 9999px;
   filter: blur(90px);
-  opacity: 0.3;
+  opacity: 0.4;
   will-change: transform;
 }
 
@@ -115,7 +116,7 @@ button:disabled {
   top: -8vh;
   width: 54vw;
   height: 48vw;
-  background: #0f766e;
+  background: #10b981;
   animation: nebula-drift-one 22s ease-in-out infinite alternate;
 }
 
@@ -124,7 +125,8 @@ button:disabled {
   top: 8vh;
   width: 48vw;
   height: 42vw;
-  background: #172554;
+  background: #047857;
+  opacity: 0.3;
   animation: nebula-drift-two 28s ease-in-out infinite alternate;
 }
 
@@ -133,8 +135,8 @@ button:disabled {
   left: 32vw;
   width: 46vw;
   height: 46vw;
-  background: #14532d;
-  opacity: 0.22;
+  background: #22c55e;
+  opacity: 0.28;
   animation: nebula-drift-three 30s ease-in-out infinite alternate;
 }
 
@@ -143,13 +145,14 @@ button:disabled {
   top: 56vh;
   width: 30vw;
   height: 30vw;
-  background: #0f766e;
-  opacity: 0.17;
+  background: #14b8a6;
+  opacity: 0.24;
   animation: nebula-drift-one 26s ease-in-out infinite alternate-reverse;
 }
 
 .nebula-vignette {
-  box-shadow: inset 0 0 180px 40px rgba(0, 0, 0, 0.62);
+  background: linear-gradient(180deg, transparent 0%, rgba(1, 8, 5, 0.12) 58%, rgba(1, 7, 4, 0.34) 100%);
+  box-shadow: inset 0 0 160px 24px rgba(0, 0, 0, 0.28);
 }
 
 .glass-panel {
@@ -157,6 +160,87 @@ button:disabled {
   background: linear-gradient(145deg, rgba(10, 24, 21, 0.82), rgba(4, 11, 10, 0.68));
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
   backdrop-filter: blur(24px);
+}
+
+.landing-section-wash {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(3, 18, 12, 0.34) 16%,
+    rgba(4, 24, 16, 0.52) 48%,
+    rgba(3, 18, 12, 0.3) 84%,
+    transparent 100%
+  );
+}
+
+.prose pre code.hljs {
+  display: block;
+  overflow-x: visible;
+  padding: 0;
+  background: transparent;
+  color: #d8f7e8;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #78a891;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-meta {
+  color: #6ee7b7;
+}
+
+.hljs-string,
+.hljs-attr,
+.hljs-template-tag,
+.hljs-template-variable {
+  color: #a7f3d0;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-symbol,
+.hljs-bullet {
+  color: #5eead4;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-type,
+.hljs-built_in {
+  color: #bef264;
+}
+
+.hljs-variable,
+.hljs-params,
+.hljs-property {
+  color: #ccfbf1;
+}
+
+.hljs-regexp,
+.hljs-link {
+  color: #99f6e4;
+}
+
+.hljs-addition {
+  color: #bbf7d0;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.hljs-deletion {
+  color: #fecdd3;
+  background: rgba(244, 63, 94, 0.1);
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: 700;
 }
 
 .text-balance {

@@ -9,7 +9,7 @@ export default function Aurora({
 }: AuroraProps) {
   return (
     <div
-      className={`nebula-scene fixed inset-0 -z-10 overflow-hidden ${className}`}
+      className={`nebula-scene pointer-events-none fixed inset-0 z-0 overflow-hidden ${className}`}
       aria-hidden="true"
     >
       <div className="nebula-base absolute inset-0" />
