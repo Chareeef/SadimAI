@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     // Get the chat completion stream from Groq
     const stream = await groq.chat.completions.create({
       messages: [{ role: "system", content: systemPrompt }, ...data],
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       temperature: 0.5,
       max_tokens: 1024,
       top_p: 1,
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
         } catch (error) {
           controller.error(error); // Handle any errors that occur during streaming
         } finally {
-          controller.close(); // Close the stream when done
+          controller.close();
         }
       },
     });
